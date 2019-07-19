@@ -5,6 +5,10 @@ import store from './store/store'
 
 Vue.config.productionTip = false
 
+Vue.filter('displayCurrency', (value: number) => {
+  return '$ ' + value.toLocaleString()
+})
+
 new Vue({
   router,
   store,

@@ -33,6 +33,10 @@ const mutations: MutationTree<PortfolioState> = {
             }
             state.funds += stock.price * stock.quantity
         }
+    },
+    'SET_PORTFOLIO'(state, portfolio) {
+        state.funds = portfolio.funds
+        state.stocks = portfolio.stockPortfolio ? portfolio.stockPortfolio : []
     }
 }
 

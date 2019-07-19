@@ -5,14 +5,20 @@
       <div class="card-body">
         <h5 class="card-title">(Price: {{ stock.price }} | Quantity: {{ stock.quantity }})</h5>
         <div>
-          <input type="number" class="form-control" placeholder="Quantity" v-model="quantity" />
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Quantity"
+            v-model="quantity"
+            :class="{ danger: insufficientQuantity }"
+          />
         </div>
         <div>
           <button
             class="btn btn-success"
             @click="sellStock"
-            :disabled="disableButton"
-          >Sell</button>
+            :disabled="disableButton || insufficientQuantity"
+          >{{ insufficientQuantity ? "No Enough" : "Sell"}}</button>
         </div>
       </div>
     </div>
@@ -21,25 +27,27 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { OrderModel } from '../../models/OrderModel';
-import {
-  Action
-} from 'vuex-class';
+import { OrderModel } from "../../models/OrderModel";
+import { Action, Getter } from "vuex-class";
 
 @Component
 export default class Stock extends Vue {
-  @Prop({type: Object as () => OrderModel}) stock!: OrderModel;
-//   @Prop() stock;
-  @Action('sellStock') sellAction: any;
+  @Prop({ type: Object as () => OrderModel }) stock!: OrderModel;
+  //   @Prop() stock;
+  @Action("sellStock") sellAction: any;
 
   private quantity = 0;
 
   get disableButton(): boolean {
-      return this.quantity <= 0
-  } 
+    return this.quantity <= 0;
+  }
+
+  get insufficientQuantity() {
+    return this.quantity > this.stock.quantity;
+  }
 
   sellStock() {
-      const order: OrderModel = {
+    const order: OrderModel = {
       id: this.stock.id,
       price: this.stock.price,
       quantity: this.quantity
@@ -58,5 +66,9 @@ export default class Stock extends Vue {
 
 .btn {
   margin-top: 1rem;
+}
+
+.danger {
+  border: 1px solid red;
 }
 </style>

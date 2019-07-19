@@ -10,12 +10,11 @@
           <a class="nav-link">Stocks</a>
         </router-link>
       </ul>
-      <strong class="navbar-text navbar-right">Funds: {{ funds }}</strong>
       <ul class="navbar-nav navbar-right">
         <li class="nav-item">
-          <a class="nav-link" href="#">End Day</a>
+          <a class="nav-link" href="#" @click="endDay">End Day</a>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" :class="{show: isDropdownOpen}" @click="isDropdownOpen = !isDropdownOpen">
           <a
             class="nav-link dropdown-toggle"
             href="#"
@@ -25,23 +24,58 @@
             aria-haspopup="true"
             aria-expanded="false"
           >Save & Load</a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Save</a>
-            <a class="dropdown-item" href="#">Load</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown" :class="{show: isDropdownOpen}">
+            <a class="dropdown-item" href="#" @click="saveData">Save</a>
+            <a class="dropdown-item" href="#" @click="loadData">Load</a>
           </div>
         </li>
       </ul>
+      <strong class="navbar-text navbar-right">Funds: {{ funds | displayCurrency }}</strong>
     </div>
   </nav>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { Getter } from 'vuex-class';
+import { Getter, Action } from 'vuex-class';
+import { StockModel } from '../models/Stock';
 
 @Component
 export default class Header extends Vue {
     @Getter funds!:number
+    @Getter stockPortfolio: any;
+    @Getter stocks!: StockModel[];
+    @Action randomizeStocks: any;
+    @Action('loadData') getData: any;
+
+
+    isDropdownOpen: boolean = false;
+
+    endDay() {
+        console.log('end day');
+        this.randomizeStocks();
+    }
+
+    saveData() {
+        const data = {
+            funds: this.funds,
+            stockPortfolio:  this.stockPortfolio,
+            stocks: this.stocks
+        }
+
+        fetch('https://vuejs-stocks-2629c.firebaseio.com/data.json', {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        }).then( res => {
+            console.log(res);
+        }).catch( err => {
+            console.log(err);
+        })
+    }
+
+    loadData() {    
+        this.getData();
+    }
 }
 </script>
 

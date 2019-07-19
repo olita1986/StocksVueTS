@@ -15,8 +15,10 @@ const mutations: MutationTree<StocksState> = {
     'SET_STOCKS'(state, stocks: StockModel[]) {
         state.stocks = stocks
     },
-    'RANDOM_STOCKS'(state, stocks: StockModel[]) {
-        state.stocks = stocks
+    'RANDOM_STOCKS'(state) {
+        state.stocks.forEach( stock => {
+            stock.price = Math.round(stock.price * (1 + Math.random() - 0.5));
+        })
     }
 }
 

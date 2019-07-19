@@ -3,7 +3,9 @@
     <Header />
     <div class="row">
       <div class="col-12">
-        <router-view></router-view>
+        <transition name="slide" mode="out-in">
+          <router-view></router-view>
+        </transition>
       </div>
     </div>
   </div>
@@ -12,10 +14,8 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Header from "./components/Header.vue";
-import {
-  Action
-} from 'vuex-class';
-import { StockModel } from './models/Stock';
+import { Action } from "vuex-class";
+import { StockModel } from "./models/Stock";
 
 @Component({
   components: {
@@ -28,13 +28,43 @@ export default class App extends Vue {
   created() {
     this.initStocks();
   }
-
-  
 }
 </script>
 
 <style>
-  body {
-    padding: 2rem;
+body {
+  padding: 2rem;
+}
+
+.slide-enter-active {
+  animation: slide-in 0.2s ease-out forwards;
+}
+
+.slide-leave-active {
+  animation: slide-out 0.2s ease-out forwards;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
   }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+}
 </style>

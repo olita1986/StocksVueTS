@@ -5,10 +5,20 @@
       <div class="card-body">
         <h5 class="card-title">(Price: {{ stock.price }})</h5>
         <div>
-          <input type="number" class="form-control" placeholder="Quantity" v-model="quantity" />
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Quantity"
+            v-model="quantity"
+            :class="{ danger: insufficientFunds }"
+          />
         </div>
         <div>
-          <button class="btn btn-success" @click="buyStock" :disabled="disableButton">Buy</button>
+          <button
+            class="btn btn-success"
+            @click="buyStock"
+            :disabled="disableButton || insufficientFunds"
+          >{{ insufficientFunds ? "No Funds" : "Buy" }}</button>
         </div>
       </div>
     </div>
@@ -19,17 +29,22 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { StockModel } from "../../models/Stock";
 import { OrderModel } from "../../models/OrderModel";
-import { Action } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 @Component
 export default class Stock extends Vue {
   @Prop({ type: Object as () => StockModel }) stock!: StockModel;
   @Action("buyStock") buyAction: any;
+  @Getter funds!: number;
 
   private quantity = 0;
 
   get disableButton(): boolean {
     return this.quantity <= 0;
+  }
+
+  get insufficientFunds() {
+    return this.quantity * this.stock.price > this.funds;
   }
 
   buyStock() {
@@ -52,5 +67,9 @@ export default class Stock extends Vue {
 
 .btn {
   margin-top: 1rem;
+}
+
+.danger {
+  border: 1px solid red;
 }
 </style>
